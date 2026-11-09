@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}My Security - MFA Guard{% endblock %}
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>My Security</h1>
+        <p>Your account protection status, active sessions, and recent security activity.</p>
+    </div>
+    {% if summary.reauth_required %}<a href="{{ url_for('reauth_page') }}" class="btn btn-danger"><i class="fas fa-lock"></i> Verify identity</a>{% endif %}
+</div>
+
+<div class="metric-grid four">
+    <div class="metric-card"><span>Status</span><strong>{% if summary.reauth_required %}Action Required{% else %}Protected{% endif %}</strong><small>Current account state</small></div>
+    <div class="metric-card"><span>Risk Score</span><strong>{{ summary.risk_score }}%</strong><small>Highest active session risk</small></div>
+    <div class="metric-card"><span>Active Sessions</span><strong>{{ summary.active_sessions }}</strong><small>Your signed-in devices</small></div>
+    <div class="metric-card"><span>Open Alerts</span><strong>{{ summary.open_anomalies }}</strong><small>Needs security review</small></div>
+</div>
+
+<div class="content-grid two-one">
+    <section class="panel">
+        <div class="panel-header"><h2>My Active Sessions</h2></div>
+        <div class="table-responsive">
+            <table class="table enterprise-table">
+                <thead><tr><th>IP</th><th>Location</th><th>Device</th><th>Risk</th><th>State</th><th></th></tr></thead>
+                <tbody>
+                {% for s in sessions %}
+                <tr>
+                    <td><code>{{ s.ip_address }}</code></td>
+                    <td>{{ s.location or 'Unknown' }}</td>
+                    <td><span class="truncate">{{ s.user_agent or 'Unknown' }}</span></td>
+                    <td><span class="risk-badge {{ 'high' if s.risk_score >= 70 else 'medium' if s.risk_score >= 40 else 'low' }}">{{ s.risk_score }}%</span></td>
+                    <td>{% if s.requires_reauth %}<span class="status-pill danger">Re-auth required</span>{% else %}<span class="status-pill good">Active</span>{% endif %}</td>
+                    <td><button class="btn btn-sm btn-outline-danger" onclick="terminateSession({{ s.id }}, {{ 'true' if active_session and s.id == active_session.id else 'false' }})"><i class="fas fa-ban"></i></button></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="empty-state">No active sessions.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <aside class="panel">
+        <div class="panel-header"><h2>MFA Method</h2></div>
+        <div class="method-card">
+            <i class="fas fa-key"></i>
+            <strong>{{ current_user.mfa_method }}</strong>
+            <span>{% if current_user.mfa_method == 'SMS OTP' %}SMS works, but authenticator apps are stronger against SIM swap.{% else %}Strong protection against SIM swap based OTP interception.{% endif %}</span>
+        </div>
+    </aside>
+</div>
+
+<div class="content-grid two-one mt-4">
+    <section class="panel">
+        <div class="panel-header"><h2>Recent Security Activity</h2></div>
+        <div class="event-list">
+            {% for e in events %}<div><span class="severity {{ e.severity }}">{{ e.severity }}</span><strong>{{ e.event_type.replace('_', ' ').title() }}</strong><small>{{ e.details }} - {{ e.timestamp }}</small></div>{% else %}<p class="empty-state">No recent activity.</p>{% endfor %}
+        </div>
+    </section>
+    <aside class="panel">
+        <div class="panel-header"><h2>Security Recommendations</h2></div>
+        <ul class="recommendations">
+            <li>Review and terminate unknown sessions.</li>
+            <li>Prefer authenticator app MFA over SMS.</li>
+            <li>Complete step-up verification immediately when requested.</li>
+        </ul>
+    </aside>
+</div>
+{% endblock %}

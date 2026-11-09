@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Re-authentication Required{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <section class="auth-panel compact">
+        <div class="auth-brand danger"><i class="fas fa-triangle-exclamation"></i></div>
+        <h1>Step-up verification</h1>
+        <p class="muted">Suspicious post-authentication activity was detected. Verify identity to continue.</p>
+        {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+        {% if delivery %}<div class="alert alert-info">Verification code sent via {{ delivery }}.</div>{% endif %}
+        <div class="reason-list">
+            {% for reason in reasons %}<span><i class="fas fa-circle-exclamation"></i> {{ reason }}</span>{% endfor %}
+        </div>
+        <form method="POST" action="{{ url_for('reauth_verify') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" required>
+            <label class="form-label mt-3">MFA Code</label>
+            <input type="text" class="form-control otp-input" name="mfa_code" maxlength="6" required>
+            <button type="submit" class="btn btn-danger w-100 mt-4"><i class="fas fa-lock"></i> Verify Identity</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

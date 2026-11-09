@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Anomalies - MFA Guard{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Anomalies</h1><p>Detected MFA bypass indicators and response workflow.</p></div></div>
+<section class="panel">
+    <div class="panel-header"><h2>Anomaly Queue</h2><select class="form-select form-select-sm table-search" id="filterType"><option value="all">All types</option><option value="impossible_travel">Impossible travel</option><option value="device_mismatch">Device mismatch</option><option value="sim_swap">SIM swap</option></select></div>
+    <div class="table-responsive"><table class="table enterprise-table" id="anomaliesTable">
+        <thead><tr><th>ID</th><th>Time</th><th>User</th><th>Type</th><th>Severity</th><th>Risk</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>{% for a in anomalies %}<tr class="anomaly-row" data-type="{{ a.anomaly_type }}">
+            <td>#{{ a.id }}</td><td>{{ a.detected_at }}</td><td><strong>{{ a.username }}</strong><small>{{ a.email }}</small></td><td>{{ a.anomaly_type.replace('_', ' ').title() }}</td><td><span class="severity {{ a.severity }}">{{ a.severity }}</span></td><td><span class="risk-badge {{ 'high' if a.risk_score >= 70 else 'medium' if a.risk_score >= 40 else 'low' }}">{{ a.risk_score }}%</span></td><td><span class="status-pill">{{ a.status }}</span></td><td><button class="btn btn-sm btn-success" onclick="resolveAnomaly({{ a.id }})"><i class="fas fa-check"></i></button> <button class="btn btn-sm btn-outline-secondary" onclick="flagFalsePositive({{ a.id }})">FP</button></td>
+        </tr>{% else %}<tr><td colspan="8" class="empty-state">No anomalies detected.</td></tr>{% endfor %}</tbody>
+    </table></div>
+</section>
+{% endblock %}

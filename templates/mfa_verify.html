@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}MFA Verification{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <section class="auth-panel compact">
+        <div class="auth-brand"><i class="fas fa-mobile-screen-button"></i></div>
+        <h1>Verify MFA</h1>
+        <p class="muted">Enter the one-time code delivered to the user's enrolled MFA method.</p>
+        {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+        {% if delivery %}<div class="alert alert-info">Verification code sent via {{ delivery }}.</div>{% endif %}
+        <form method="POST" action="{{ url_for('mfa_verify') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="text" class="form-control otp-input" name="otp" maxlength="6" placeholder="000000" required autofocus>
+            <button class="btn btn-primary w-100 mt-3" type="submit"><i class="fas fa-check"></i> Verify and Continue</button>
+        </form>
+    </section>
+</div>
+{% endblock %}

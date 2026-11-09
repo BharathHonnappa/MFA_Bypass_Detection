@@ -1,0 +1,12 @@
+.env
+*.db
+passwords.txt
+__pycache__/
+*.pyc
+MFA_GUARD_DB=*
+.venv/
+instance/
+*.py[cod]
+.venv/
+instance/
+*.py[cod]

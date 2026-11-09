@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} - MFA Guard{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <section class="auth-panel compact">
+        <div class="auth-brand danger"><i class="fas fa-circle-exclamation"></i></div>
+        <h1>{{ title }}</h1>
+        <p class="muted">{{ message }}</p>
+        <a class="btn btn-primary w-100 mt-3" href="{{ url_for('index') }}"><i class="fas fa-arrow-left"></i> Return to dashboard</a>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Sessions - MFA Guard{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Sessions</h1><p>All active employee and admin sessions under monitoring.</p></div></div>
+<section class="panel">
+    <div class="panel-header"><h2>Active Sessions</h2><input class="form-control form-control-sm table-search" id="sessionSearch" placeholder="Search sessions"></div>
+    <div class="table-responsive"><table class="table enterprise-table" id="sessionsTable">
+        <thead><tr><th>User</th><th>Role</th><th>IP</th><th>Location</th><th>Device</th><th>Login</th><th>Risk</th><th>State</th><th></th></tr></thead>
+        <tbody>{% for s in sessions %}<tr>
+            <td><strong>{{ s.username }}</strong><small>{{ s.email }}</small></td><td>{{ s.role }}</td><td><code>{{ s.ip_address }}</code></td><td>{{ s.location or 'Unknown' }}</td><td><span class="truncate">{{ s.user_agent or 'Unknown' }}</span></td><td>{{ s.login_time }}</td><td><span class="risk-badge {{ 'high' if s.risk_score >= 70 else 'medium' if s.risk_score >= 40 else 'low' }}">{{ s.risk_score }}%</span></td><td>{% if s.blocked %}<span class="status-pill danger">Blocked</span>{% elif s.requires_reauth %}<span class="status-pill warning">Re-auth</span>{% else %}<span class="status-pill good">Active</span>{% endif %}</td><td><button class="btn btn-sm btn-outline-danger" onclick="terminateSession({{ s.id }}, {{ 'true' if active_session and s.id == active_session.id else 'false' }})"><i class="fas fa-ban"></i></button></td>
+        </tr>{% else %}<tr><td colspan="9" class="empty-state">No active sessions.</td></tr>{% endfor %}</tbody>
+    </table></div>
+</section>
+{% endblock %}

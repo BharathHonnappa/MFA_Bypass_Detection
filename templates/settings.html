@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Settings - MFA Guard{% endblock %}
+{% block content %}
+<div class="page-heading"><div><h1>Detection Settings</h1><p>Response policy for the enterprise demo environment.</p></div></div>
+<form method="POST" action="{{ url_for('settings') }}" class="content-grid two">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <section class="panel"><div class="panel-header"><h2>Risk Thresholds</h2></div>
+        <label class="setting-row"><strong>Monitor from</strong><input class="form-control form-control-sm threshold-input" type="number" name="monitor_min" min="0" max="99" value="{{ settings.monitor_min }}" required></label>
+        <label class="setting-row"><strong>Step-up from</strong><input class="form-control form-control-sm threshold-input" type="number" name="step_up_min" min="1" max="100" value="{{ settings.step_up_min }}" required></label>
+        <label class="setting-row"><strong>Block from</strong><input class="form-control form-control-sm threshold-input" type="number" name="block_min" min="1" max="100" value="{{ settings.block_min }}" required></label>
+        <div class="settings-actions"><button class="btn btn-primary" type="submit"><i class="fas fa-floppy-disk"></i> Save policy</button></div>
+    </section>
+    <section class="panel"><div class="panel-header"><h2>Enabled Rules</h2></div>
+        <label class="rule-toggle"><span>Impossible travel</span><input type="checkbox" name="rule_impossible_travel" {% if settings.rules.impossible_travel %}checked{% endif %}></label>
+        <label class="rule-toggle"><span>Device fingerprint mismatch</span><input type="checkbox" name="rule_device_mismatch" {% if settings.rules.device_mismatch %}checked{% endif %}></label>
+        <label class="rule-toggle"><span>User agent change</span><input type="checkbox" name="rule_user_agent_changed" {% if settings.rules.user_agent_changed %}checked{% endif %}></label>
+        <label class="rule-toggle"><span>VPN/Tor/datacenter access</span><input type="checkbox" name="rule_vpn_tor_datacenter" {% if settings.rules.vpn_tor_datacenter %}checked{% endif %}></label>
+        <label class="rule-toggle"><span>SIM swap correlation</span><input type="checkbox" name="rule_sim_swap" {% if settings.rules.sim_swap %}checked{% endif %}></label>
+        <label class="rule-toggle"><span>Unusual request rate</span><input type="checkbox" name="rule_rapid_requests" {% if settings.rules.rapid_requests %}checked{% endif %}></label>
+        <label class="rule-toggle"><span>Unusual access time</span><input type="checkbox" name="rule_unusual_time" {% if settings.rules.unusual_time %}checked{% endif %}></label>
+    </section>
+</form>
+{% endblock %}

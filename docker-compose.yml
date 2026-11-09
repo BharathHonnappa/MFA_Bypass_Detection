@@ -1,0 +1,14 @@
+services:
+  mfa-guard:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - MFA_GUARD_SECRET_KEY=change-this-for-anything-beyond-a-quick-demo
+      - MFA_GUARD_COOKIE_SECURE=false
+      - MFA_GUARD_DB=/app/data/mfa_security.db
+    volumes:
+      - mfa-guard-db:/app/data
+
+volumes:
+  mfa-guard-db:

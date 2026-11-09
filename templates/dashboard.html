@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Security Dashboard - MFA Guard{% endblock %}
+{% block content %}
+<div class="page-heading">
+    <div><h1>Security Dashboard</h1><p>Company-wide post-authentication risk monitoring.</p></div>
+    <button class="btn btn-primary simulate-btn" onclick="simulateAttack()"><i class="fas fa-flask"></i> Simulate Attack</button>
+</div>
+
+<div class="metric-grid four">
+    <div class="metric-card"><span>Employees</span><strong>{{ stats.total_users }}</strong><small>Monitored identities</small></div>
+    <div class="metric-card"><span>Active Sessions</span><strong id="active-sessions">{{ stats.active_sessions }}</strong><small>Current signed-in sessions</small></div>
+    <div class="metric-card"><span>Anomalies Today</span><strong id="anomalies-today">{{ stats.anomalies_today }}</strong><small>Open and reviewed alerts</small></div>
+    <div class="metric-card"><span>Avg Risk</span><strong id="avg-risk">{{ stats.avg_risk_score }}%</strong><small>Across active sessions</small></div>
+</div>
+
+<div class="content-grid two-one">
+    <section class="panel chart-panel"><div class="panel-header"><h2>Risk Timeline</h2></div><canvas id="riskTimeline"></canvas></section>
+    <section class="panel chart-panel"><div class="panel-header"><h2>Attack Types</h2></div><canvas id="attackTypes"></canvas></section>
+</div>
+
+<section class="panel mt-4">
+    <div class="panel-header"><h2>Recent Anomalies</h2><a href="{{ url_for('anomalies_page') }}">View all</a></div>
+    <div class="table-responsive">
+        <table class="table enterprise-table"><thead><tr><th>Time</th><th>User</th><th>Type</th><th>Risk</th><th>Status</th></tr></thead><tbody id="anomalies-tbody">
+            {% for a in anomalies %}<tr><td>{{ a.detected_at }}</td><td>{{ a.username }}</td><td>{{ a.anomaly_type }}</td><td><span class="risk-badge {{ 'high' if a.risk_score >= 70 else 'medium' if a.risk_score >= 40 else 'low' }}">{{ a.risk_score }}%</span></td><td><span class="status-pill">{{ a.status }}</span></td></tr>{% else %}<tr><td colspan="5" class="empty-state">No anomalies yet.</td></tr>{% endfor %}
+        </tbody></table>
+    </div>
+</section>
+{% endblock %}

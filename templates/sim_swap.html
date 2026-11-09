@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}SIM Swap - MFA Guard{% endblock %}
+{% block content %}
+<div class="page-heading">
+    <div><h1>SIM Swap Monitoring</h1><p>Detect phone-number takeover signals that can defeat SMS-based MFA.</p></div>
+    <button class="btn btn-primary" onclick="simulateSIMSwap()"><i class="fas fa-flask"></i> Simulate SIM Swap</button>
+</div>
+<div class="metric-grid three">
+    <div class="metric-card"><span>Carrier/IMSI Signals</span><strong>{{ events|length }}</strong><small>Recent investigated events</small></div>
+    <div class="metric-card"><span>Response</span><strong>Step-up</strong><small>Force re-auth at high risk</small></div>
+    <div class="metric-card"><span>SMS MFA</span><strong>Higher Risk</strong><small>Prefer authenticator apps</small></div>
+</div>
+<section class="panel">
+    <div class="panel-header"><h2>SIM Swap Events</h2></div>
+    <div class="table-responsive"><table class="table enterprise-table">
+        <thead><tr><th>ID</th><th>Time</th><th>User</th><th>Phone</th><th>Carrier</th><th>IMSI</th><th>Risk</th><th>Signals</th><th>Status</th></tr></thead>
+        <tbody>{% for e in events %}<tr><td>#{{ e.id }}</td><td>{{ e.detected_at }}</td><td><strong>{{ e.username }}</strong><small>{{ e.email }}</small></td><td>{{ e.phone }}</td><td>{{ e.old_carrier }} -> {{ e.new_carrier }}</td><td>{% if e.old_imsi != e.new_imsi %}<span class="status-pill danger">Changed</span>{% else %}<span class="status-pill good">Stable</span>{% endif %}</td><td><span class="risk-badge {{ 'high' if e.risk_score >= 70 else 'medium' if e.risk_score >= 40 else 'low' }}">{{ e.risk_score }}%</span></td><td>{{ e.signals_detected }}</td><td><span class="status-pill">{{ e.status }}</span></td></tr>{% else %}<tr><td colspan="9" class="empty-state">No SIM swap events.</td></tr>{% endfor %}</tbody>
+    </table></div>
+</section>
+{% endblock %}
